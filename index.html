@@ -7,17 +7,20 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#f97316">
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3014/3014502.png" type="image/png">
+    
+    <link rel="icon" href="./logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="./logo.png">
     
     <title>Douceur de Yani - BakerCalc Pro</title>
     
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -73,7 +76,8 @@
         <header class="p-5 flex justify-between items-center sticky top-0 glass-header z-40">
             <div>
                 <h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>🥐</span> Douceur <span class="text-orange-500 italic font-black">PRO</span>
+                    <img src="./logo.png" class="w-8 h-8 rounded-full object-cover shadow-sm bg-white" alt="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3014/3014502.png'">
+                    Douceur <span class="text-orange-500 italic font-black">PRO</span>
                 </h1>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1" x-text="menuTitle()"></p>
             </div>
@@ -158,6 +162,12 @@
                                 <span class="text-[9px] font-bold text-slate-400 uppercase pr-2" x-text="st.unit"></span>
                                 <button @click="deleteStock(index)" class="w-8 h-8 bg-white dark:bg-slate-600 text-red-400 rounded-xl flex items-center justify-center text-sm hover:bg-red-50 transition shadow-sm border border-slate-100 dark:border-slate-500">✕</button>
                             </div>
+                        </div>
+                    </template>
+                    <template x-if="masterStock.length === 0">
+                        <div class="text-center py-10 opacity-50">
+                            <span class="text-4xl block mb-2">📦</span>
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Gudang Masih Kosong</p>
                         </div>
                     </template>
                 </div>
@@ -426,7 +436,7 @@
     </div>
 
     <script>
-        // 1. Inisialisasi Firebase secara Sinkron (Compat Mode)
+        // 1. Inisialisasi Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyByGpucXRAToCpkTLf9R-k1YqDQ75Zm5_E",
             authDomain: "douceurdeyani.firebaseapp.com",
@@ -468,7 +478,6 @@
 
                 // --- INIT DATA ---
                 async init() {
-                    // Ambil dari local dulu biar aplikasi tidak blank sambil nunggu Firebase
                     try {
                         const localStock = localStorage.getItem('bV26_Stock_Final');
                         const localItems = localStorage.getItem('bV26_Recipe_Final');
@@ -478,7 +487,6 @@
                         if(localSet) this.settings = JSON.parse(localSet);
                     } catch(e) {}
 
-                    // Ambil dari Cloud
                     try {
                         const docSnap = await DOC_REF.get();
                         if (docSnap.exists) {
@@ -520,13 +528,12 @@
                 async saveDataToFirebase() {
                     this.isSyncing = true;
                     try {
-                        // Mengirim beserta PIN agar Firebase memperbolehkan penulisan
                         await DOC_REF.set({
                             stock: this.masterStock,
                             recipes: this.items,
                             settings: this.settings,
                             lastUpdated: new Date().toISOString(),
-                            pin: "yani123"
+                            pin: "yani123" // PIN KHUSUS UNTUK LOLOS RULES FIREBASE
                         });
                         setTimeout(() => this.isSyncing = false, 800); 
                     } catch (error) {
