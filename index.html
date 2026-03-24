@@ -272,10 +272,27 @@
                                     <span class="text-[9px] font-bold text-orange-500 uppercase block mb-1">HPP per Pcs</span>
                                     <span class="font-black text-orange-700 dark:text-orange-400 text-sm" x-text="formatRupiah(item.hpp)"></span>
                                 </div>
-                                <div class="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                                <div class="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30 relative overflow-hidden">
                                     <span class="text-[9px] font-bold text-emerald-500 uppercase block mb-1">Harga Jual</span>
-                                    <span class="font-black text-emerald-700 dark:text-emerald-400 text-sm" x-text="formatRupiah(item.price)"></span>
+                                    <span class="font-black text-emerald-700 dark:text-emerald-400 text-sm" :class="item.discount > 0 ? 'line-through opacity-50 text-xs' : ''" x-text="formatRupiah(item.price)"></span>
                                 </div>
+                                
+                                <div class="col-span-2 bg-rose-50 dark:bg-rose-900/10 p-3 rounded-xl border border-rose-100 dark:border-rose-900/30">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-[10px] font-bold text-rose-500 uppercase flex items-center gap-1.5"><span>🏷️</span> Promo Diskon (%)</span>
+                                        <div class="flex items-center bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-rose-200 dark:border-rose-800 shadow-sm">
+                                            <input type="number" x-model.number="item.discount" @input="saveData(false); updateCharts()" placeholder="0" class="w-16 p-1.5 text-center text-xs font-black outline-none bg-transparent text-rose-600 dark:text-rose-400">
+                                            <span class="pr-3 text-xs font-bold text-rose-400">%</span>
+                                        </div>
+                                    </div>
+                                    <template x-if="item.discount > 0">
+                                        <div class="flex justify-between items-center text-[10px] pt-2 border-t border-rose-100 dark:border-rose-800/50 mt-1">
+                                            <span class="text-slate-500 font-bold">Harga Promo: <strong class="text-rose-600 dark:text-rose-400 text-[11px] bg-white dark:bg-slate-800 px-2 py-0.5 rounded shadow-sm border border-rose-100 dark:border-rose-800" x-text="formatRupiah(item.price - (item.price * item.discount / 100))"></strong></span>
+                                            <span class="text-slate-500">Laba/pcs: <strong class="text-emerald-500 text-[11px]" x-text="formatRupiah((item.price - (item.price * item.discount / 100)) - item.hpp)"></strong></span>
+                                        </div>
+                                    </template>
+                                </div>
+
                                 <div class="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30 col-span-2 flex justify-between items-center">
                                     <span class="uppercase font-bold text-[9px] text-blue-600 dark:text-blue-400 tracking-tighter">Target BEP (Balik Modal):</span>
                                     <span class="font-black text-blue-700 dark:text-blue-300 text-xs px-2.5 bg-white dark:bg-blue-900 py-1.5 rounded-lg shadow-sm border border-blue-100 dark:border-blue-800" x-text="calculateBEP(item) + ' Pcs'"></span>
@@ -285,7 +302,7 @@
                             <div class="flex justify-between items-center border-t border-slate-100 dark:border-slate-700 pt-4 mt-2">
                                 <div>
                                     <span class="block text-[10px] font-black uppercase text-slate-400 mb-0.5">Total Pcs Terjual</span>
-                                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded" x-text="'Laba: ' + formatRupiah((item.price - item.hpp) * (item.sold || 0))"></span>
+                                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded" x-text="'Laba: ' + formatRupiah(((item.discount > 0 ? item.price * (1 - item.discount/100) : item.price) - item.hpp) * (item.sold || 0))"></span>
                                 </div>
                                 <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700">
                                     <button @click="updateSold(item, -1)" class="w-10 h-10 bg-white dark:bg-slate-700 text-slate-800 dark:text-white rounded-xl shadow-sm font-black text-lg flex items-center justify-center active:scale-90 transition border border-slate-100 dark:border-slate-600">-</button>
@@ -397,8 +414,9 @@
                                 <p style="font-size: 24px; font-weight: 900; color: #ea580c; margin: 4px 0 0 0;" x-text="pdfData.yield + ' Pcs'"></p>
                             </div>
                             <div style="flex: 1;">
-                                <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Harga Jual / Pcs</p>
-                                <p style="font-size: 24px; font-weight: 900; color: #10b981; margin: 4px 0 0 0;" x-text="formatRupiah(pdfData.price)"></p>
+                                <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Harga Jual / Pcs <span x-show="pdfData.discount > 0" x-text="'(Diskon ' + pdfData.discount + '%)'" style="color: #ea580c; background: #fff7ed; padding: 2px 6px; border-radius: 4px; border: 1px solid #fdba74;"></span></p>
+                                <p style="font-size: 24px; font-weight: 900; color: #10b981; margin: 4px 0 0 0;" x-text="formatRupiah(pdfData.discount > 0 ? pdfData.price * (1 - pdfData.discount/100) : pdfData.price)"></p>
+                                <p x-show="pdfData.discount > 0" style="font-size: 11px; text-decoration: line-through; color: #94a3b8; margin: 2px 0 0 0;" x-text="formatRupiah(pdfData.price)"></p>
                             </div>
                             <div style="flex: 1;">
                                 <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Modal (HPP) / Pcs</p>
@@ -444,7 +462,6 @@
     </div>
 
     <script>
-        // 1. Inisialisasi Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyByGpucXRAToCpkTLf9R-k1YqDQ75Zm5_E",
             authDomain: "douceurdeyani.firebaseapp.com",
@@ -458,7 +475,6 @@
         const db = firebase.firestore();
         const DOC_REF = db.collection("bakercalc_pro").doc("main_data");
 
-        // 2. Logika Utama Alpine.js
         document.addEventListener('alpine:init', () => {
             Alpine.data('bakerApp', () => ({
                 menu: 'dash',
@@ -475,7 +491,7 @@
                 toast: { show: false, msg: '', icon: '' },
                 charts: {},
                 isSyncing: true, 
-                pdfData: { nama: 'Memuat...', yield: 1, price: 0, hpp: 0, ingredients: [] },
+                pdfData: { nama: 'Memuat...', yield: 1, price: 0, hpp: 0, ingredients: [], discount: 0 },
 
                 menuTitle() { return { dash:'Dashboard Bisnis', stock:'Gudang Bahan', recipe:'Kalkulator Resep', list:'Katalog Produk', sim:'Simulasi Produksi', settings:'Konfigurasi Sistem' }[this.menu] },
 
@@ -484,7 +500,6 @@
                     setTimeout(() => { this.toast.show = false; }, 3000);
                 },
 
-                // --- INIT DATA ---
                 async init() {
                     try {
                         const localStock = localStorage.getItem('bV26_Stock_Final');
@@ -513,7 +528,7 @@
                         }
                     } catch (error) {
                         console.error("Firebase Error: ", error);
-                        this.showToast('Koneksi Cloud gagal. Pakai mode Offline.', '⚠️');
+                        this.showToast('Koneksi Cloud gagal.', '⚠️');
                     }
 
                     this.isSyncing = false;
@@ -522,14 +537,12 @@
                     this.updateCharts(); 
                 },
 
-                // --- SAVE DATA ---
                 async saveData(showTst = false) {
                     localStorage.setItem('bV26_Stock_Final', JSON.stringify(this.masterStock));
                     localStorage.setItem('bV26_Recipe_Final', JSON.stringify(this.items));
                     localStorage.setItem('bV26_Settings_Final', JSON.stringify(this.settings));
                     this.checkStok();
                     if(showTst) this.showToast('Pengaturan Disimpan', '⚙️');
-                    
                     this.saveDataToFirebase();
                 },
 
@@ -545,7 +558,6 @@
                         });
                         setTimeout(() => this.isSyncing = false, 800); 
                     } catch (error) {
-                        console.error("Gagal simpan ke Firebase: ", error);
                         this.isSyncing = false;
                         this.showToast('Gagal simpan ke Cloud', '❌');
                     }
@@ -557,7 +569,6 @@
                     this.showToast('Sinkronisasi Sukses!', '☁️');
                 },
 
-                // --- FITUR CETAK PDF (Diperbaiki untuk iPhone) ---
                 async exportToPDF(item) {
                     this.pdfData = JSON.parse(JSON.stringify(item));
                     this.showToast('Menyiapkan Laporan PDF...', '⏳');
@@ -568,7 +579,6 @@
                         const element = document.getElementById('pdf-export-template');
                         const wrapper = document.getElementById('pdf-wrapper');
                         
-                        // Tarik masuk ke layar secara sembunyi-sembunyi agar iPhone mau render ukurannya
                         wrapper.style.left = '0';
                         wrapper.style.zIndex = '-1'; 
 
@@ -576,24 +586,17 @@
                             margin:       [0.4, 0.4, 0.4, 0.4],
                             filename:     `Resep_${item.nama.replace(/\s+/g, '_')}_Douceur.pdf`,
                             image:        { type: 'jpeg', quality: 0.98 },
-                            html2canvas:  { 
-                                scale: 2, 
-                                useCORS: true, 
-                                width: 800,       // PAKSA LEBAR KE 800PX
-                                windowWidth: 800  // PAKSA IPHONE MERASA LAYARNYA 800PX
-                            },
+                            html2canvas:  { scale: 2, useCORS: true, width: 800, windowWidth: 800 },
                             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
                         };
 
                         html2pdf().set(opt).from(element).save().then(() => {
                             this.showToast('PDF Berhasil Diunduh!', '📄');
-                            // Buang kembali ke luar layar
                             wrapper.style.left = '-15000px';
                         });
-                    }, 500); // Jeda setengah detik memastikan iPhone selesai me-render
+                    }, 500); 
                 },
 
-                // --- KALKULASI & LOGIKA APLIKASI ---
                 getMultiplier(unit) {
                     const m = { 'kg': 1000, 'g': 1, 'gram': 1, 'liter': 1000, 'ml': 1, 'mili liter': 1, 'ons': 100, 'butir': 1 };
                     return m[unit] || 1;
@@ -622,7 +625,8 @@
 
                 calculateBEP(item) {
                     let totalModalAdonan = item.hpp * item.yield;
-                    return item.price > 0 ? Math.ceil(totalModalAdonan / item.price) : 0;
+                    let actualPrice = item.discount > 0 ? item.price * (1 - item.discount/100) : item.price;
+                    return actualPrice > 0 ? Math.ceil(totalModalAdonan / actualPrice) : 0;
                 },
 
                 addStock() {
@@ -632,7 +636,7 @@
                     this.saveData(false);
                     this.newStock = { nama: '', harga: null, beratBeli: 1, unit: 'kg', qty: 0, min: 0.5, minUnit: 'kg' };
                     this.updateCharts();
-                    this.showToast('Bahan Berhasil Ditambah', '✅');
+                    this.showToast('Bahan Ditambah', '✅');
                 },
 
                 editItem(index) {
@@ -654,7 +658,7 @@
                     if(!this.recipe.nama || !this.recipe.hargaManual) { this.showToast('Nama & Harga wajib!', '❌'); return; }
                     let newItem = {
                         nama: this.recipe.nama, hpp: this.calculateHpp(), price: this.recipe.hargaManual, yield: this.recipe.yield,
-                        ingredients: JSON.parse(JSON.stringify(this.recipe.ingredients)), sold: this.editIndex !== null ? this.items[this.editIndex].sold : 0
+                        ingredients: JSON.parse(JSON.stringify(this.recipe.ingredients)), sold: this.editIndex !== null ? this.items[this.editIndex].sold : 0, discount: this.editIndex !== null ? (this.items[this.editIndex].discount || 0) : 0
                     };
                     if (this.editIndex !== null) { this.items[this.editIndex] = newItem; this.editIndex = null; this.showToast('Resep Diperbarui!'); } 
                     else { this.items.unshift(newItem); this.showToast('Resep Baru Disimpan!'); }
@@ -698,8 +702,18 @@
                 },
                 getSimTotalCost() { return this.getSimDetail().reduce((acc, i) => acc + i.cost, 0); },
 
-                calculateNetProfit() { return this.items.reduce((acc, i) => acc + ((i.price - i.hpp) * (i.sold || 0)), 0); },
-                calculateTotalRevenue() { return this.items.reduce((acc, i) => acc + (i.price * (i.sold || 0)), 0); },
+                calculateNetProfit() { 
+                    return this.items.reduce((acc, i) => {
+                        let actualPrice = i.discount > 0 ? i.price * (1 - i.discount/100) : i.price;
+                        return acc + ((actualPrice - i.hpp) * (i.sold || 0));
+                    }, 0); 
+                },
+                calculateTotalRevenue() { 
+                    return this.items.reduce((acc, i) => {
+                        let actualPrice = i.discount > 0 ? i.price * (1 - i.discount/100) : i.price;
+                        return acc + (actualPrice * (i.sold || 0));
+                    }, 0); 
+                },
                 calculateTotalHpp() { return this.items.reduce((acc, i) => acc + (i.hpp * (i.sold || 0)), 0); },
 
                 isStockLow(st) {
@@ -737,7 +751,17 @@
                         const hCtx = document.getElementById('dashHppChart')?.getContext('2d');
                         if(hCtx && this.items.length) {
                             if(this.charts.hpp) this.charts.hpp.destroy();
-                            this.charts.hpp = new Chart(hCtx, { type: 'bar', data: { labels: this.items.map(i => i.nama), datasets: [{ label: 'Harga Jual', data: this.items.map(i => i.price), backgroundColor: '#10b981', borderRadius: 6 }, { label: 'HPP', data: this.items.map(i => i.hpp), backgroundColor: '#f97316', borderRadius: 6 }] }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, family: "'Plus Jakarta Sans', sans-serif" } } } } } });
+                            this.charts.hpp = new Chart(hCtx, { 
+                                type: 'bar', 
+                                data: { 
+                                    labels: this.items.map(i => i.nama), 
+                                    datasets: [
+                                        { label: 'Harga Jual', data: this.items.map(i => i.discount > 0 ? i.price * (1 - i.discount/100) : i.price), backgroundColor: '#10b981', borderRadius: 6 }, 
+                                        { label: 'HPP', data: this.items.map(i => i.hpp), backgroundColor: '#f97316', borderRadius: 6 }
+                                    ] 
+                                }, 
+                                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, family: "'Plus Jakarta Sans', sans-serif" } } } } } 
+                            });
                         }
                         const sCtx = document.getElementById('dashStockChart')?.getContext('2d');
                         if(sCtx && this.masterStock.length) {
