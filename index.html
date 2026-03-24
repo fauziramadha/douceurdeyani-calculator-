@@ -370,7 +370,7 @@
         </main>
     </div>
 
-    <div id="pdf-export-template" class="fixed -left-[9999px] top-0 bg-white w-[800px] p-10 text-slate-900 font-sans">
+    <div id="pdf-export-template" class="fixed -left-[9999px] top-0 bg-white w-[800px] p-10 text-slate-900 font-sans z-[-100]">
         <div class="border-b-4 border-orange-500 pb-6 mb-6 flex justify-between items-center">
             <div>
                 <h1 class="text-4xl font-black text-slate-900 tracking-tight">DOUCEUR DE YANI</h1>
@@ -557,16 +557,22 @@
                     await this.$nextTick(); 
                     
                     const element = document.getElementById('pdf-export-template');
+                    
+                    // Tarik elemen ke dalam layar (sembunyikan di belakang)
+                    element.style.left = '0px';
+
                     const opt = {
                         margin:       0.4,
                         filename:     `Resep_${item.nama.replace(/\s+/g, '_')}_Douceur.pdf`,
                         image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true, logging: false },
+                        html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
                         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
                     };
 
                     html2pdf().set(opt).from(element).save().then(() => {
                         this.showToast('PDF Berhasil Diunduh!', '📄');
+                        // Kembalikan elemen ke luar layar
+                        element.style.left = '-9999px';
                     });
                 },
 
