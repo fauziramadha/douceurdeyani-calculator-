@@ -114,8 +114,8 @@
             <div x-show="menu === 'stock'" x-transition class="space-y-5">
                 <div class="card-custom p-6 space-y-5 shadow-orange-500/5 border-t-4 border-t-orange-500">
                     <div>
-                        <label class="text-[10px] font-black uppercase text-slate-500 mb-1 block">Nama Bahan Baku</label>
-                        <input type="text" x-model="newStock.nama" placeholder="Contoh: Tepung Terigu Segitiga" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-sm font-bold border-none outline-none focus:ring-2 focus:ring-orange-500 transition">
+                        <label class="text-[10px] font-black uppercase text-slate-500 mb-1 block">Nama Bahan/Kemasan</label>
+                        <input type="text" x-model="newStock.nama" placeholder="Contoh: Terigu / Toples Kaca" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-sm font-bold border-none outline-none focus:ring-2 focus:ring-orange-500 transition">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -123,11 +123,12 @@
                             <input type="number" x-model.number="newStock.harga" class="p-4 w-full bg-slate-50 dark:bg-slate-800 rounded-2xl text-sm font-bold border-none outline-none focus:ring-2 focus:ring-orange-500 transition" placeholder="Rp">
                         </div>
                         <div>
-                            <label class="text-[10px] font-black uppercase text-slate-500 mb-1 block">Berat Beli</label>
+                            <label class="text-[10px] font-black uppercase text-slate-500 mb-1 block">Isi / Berat Beli</label>
                             <div class="flex bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-orange-500 transition">
                                 <input type="number" x-model.number="newStock.beratBeli" placeholder="Isi" class="w-full p-4 bg-transparent text-sm font-bold border-none outline-none text-center">
-                                <select x-model="newStock.unit" class="bg-slate-200 dark:bg-slate-700 text-[10px] font-black px-3 outline-none">
+                                <select x-model="newStock.unit" class="bg-slate-200 dark:bg-slate-700 text-[10px] font-black px-2 outline-none">
                                     <option>kg</option><option>g</option><option>liter</option><option>ml</option><option>ons</option><option>butir</option>
+                                    <option>pcs</option><option>lembar</option><option>pack</option>
                                 </select>
                             </div>
                         </div>
@@ -136,8 +137,9 @@
                         <label class="text-[10px] font-black uppercase text-orange-600 dark:text-orange-400 mb-2 block flex items-center gap-1"><span>🔔</span> Minimal Stok (Reminder)</label>
                         <div class="flex bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm">
                             <input type="number" x-model.number="newStock.min" placeholder="Batas sisa stok" class="w-full p-3 bg-transparent text-xs font-bold border-none outline-none">
-                            <select x-model="newStock.minUnit" class="bg-orange-100 dark:bg-orange-800/50 text-[10px] font-black px-3 border-l border-orange-50 outline-none text-orange-900 dark:text-orange-100">
+                            <select x-model="newStock.minUnit" class="bg-orange-100 dark:bg-orange-800/50 text-[10px] font-black px-2 border-l border-orange-50 outline-none text-orange-900 dark:text-orange-100">
                                 <option>kg</option><option>g</option><option>liter</option><option>ml</option><option>ons</option><option>butir</option>
+                                <option>pcs</option><option>lembar</option><option>pack</option>
                             </select>
                         </div>
                     </div>
@@ -181,19 +183,49 @@
                     </div>
                 </template>
 
-                <div class="card-custom p-5 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-orange-200 flex justify-between items-center">
-                    <span class="text-[10px] font-black uppercase text-orange-600 dark:text-orange-400 tracking-widest">Estimasi HPP per Pcs:</span>
-                    <span class="text-lg font-black text-orange-600 dark:text-orange-400 drop-shadow-sm" x-text="formatRupiah(calculateHpp())"></span>
+                <div class="card-custom p-5 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-orange-200">
+                    <div class="flex justify-between items-center mb-3 border-b border-orange-200/50 pb-3">
+                        <span class="text-[10px] font-black uppercase text-orange-600 dark:text-orange-400 tracking-widest">Total HPP per Pcs:</span>
+                        <span class="text-2xl font-black text-orange-600 dark:text-orange-400 drop-shadow-sm" x-text="formatRupiah(calculateHpp())"></span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-center divide-x divide-orange-200/50">
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-500 uppercase">HPP Adonan / gram</p>
+                            <p class="text-sm font-black text-slate-800 dark:text-slate-200" x-text="formatRupiah(getHppPerGram())"></p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-500 uppercase">Estimasi Hasil Pcs</p>
+                            <p class="text-sm font-black text-slate-800 dark:text-slate-200" x-text="getCalculatedYield() + ' Pcs'"></p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card-custom p-6 space-y-5 border-t-4 border-t-emerald-400">
                     <div>
                         <label class="text-[10px] font-black uppercase text-slate-400 mb-1 block">Nama Produk</label>
-                        <input type="text" x-model="recipe.nama" placeholder="Contoh: Chiffon Cake Pandan" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none font-bold text-sm focus:ring-2 focus:ring-emerald-500 transition">
+                        <input type="text" x-model="recipe.nama" placeholder="Contoh: Kue Kering Coklat 500g" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none font-bold text-sm focus:ring-2 focus:ring-emerald-500 transition border border-slate-200 dark:border-slate-700">
                     </div>
+                    
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1 text-center bg-slate-50 dark:bg-slate-800 p-3 rounded-2xl border border-slate-100 dark:border-slate-700">
-                            <label class="text-[9px] font-black uppercase text-slate-400">Harga Jual Final</label>
+                        <div class="space-y-1 bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-blue-500 transition">
+                            <label class="text-[9px] font-black uppercase text-slate-500 block text-center">Berat Mentah/Pcs</label>
+                            <div class="flex items-center justify-center">
+                                <input type="number" x-model.number="recipe.targetWeightPcs" @input="calcAutoPrice()" placeholder="50" class="w-16 p-2 bg-transparent text-sm font-black text-slate-800 dark:text-white outline-none text-center">
+                                <span class="text-xs font-bold text-slate-400">gram</span>
+                            </div>
+                        </div>
+                        <div class="space-y-1 bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-blue-500 transition">
+                            <label class="text-[9px] font-black uppercase text-slate-500 block text-center">Penyusutan Oven</label>
+                            <div class="flex items-center justify-center">
+                                <input type="number" x-model.number="recipe.bakingLoss" placeholder="10" class="w-16 p-2 bg-transparent text-sm font-black text-slate-800 dark:text-white outline-none text-center">
+                                <span class="text-xs font-bold text-slate-400">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1 text-center bg-emerald-50 dark:bg-emerald-900/10 p-3 rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
+                            <label class="text-[9px] font-black uppercase text-emerald-600">Harga Jual Final</label>
                             <input type="number" x-model.number="recipe.hargaManual" @input="calcAutoMargin()" placeholder="Rp" class="w-full p-2 bg-transparent text-sm font-black text-emerald-600 dark:text-emerald-400 outline-none text-center">
                         </div>
                         <div class="space-y-1 text-center bg-slate-50 dark:bg-slate-800 p-3 rounded-2xl border border-slate-100 dark:border-slate-700">
@@ -203,18 +235,20 @@
                     </div>
                 </div>
                 
-                <div class="card-custom p-6 space-y-4">
-                    <h3 class="text-[11px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
-                        <span>Bahan Per Adonan</span>
-                        <span class="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full text-[9px] text-slate-600 dark:text-slate-300" x-text="recipe.ingredients.length + ' Bahan'"></span>
-                    </h3>
+                <div class="card-custom p-6 space-y-4 border-l-4 border-l-amber-500">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <div>
+                            <h3 class="text-[11px] font-black text-amber-600 uppercase tracking-widest flex items-center gap-1.5"><span>🥣</span> Adonan Dasar (Bulk)</h3>
+                            <p class="text-[9px] text-slate-400 mt-1 font-medium leading-tight">Bahan yang diaduk massal (Terigu, Ragi). Otomatis dibagi ke hasil Pcs.</p>
+                        </div>
+                    </div>
                     
                     <div class="space-y-3">
-                        <template x-for="(ing, index) in recipe.ingredients" :key="index">
-                            <div class="flex gap-2 items-center bg-slate-50 dark:bg-slate-800/50 p-2 pl-4 rounded-2xl border border-slate-200 dark:border-slate-700 focus-within:border-orange-400 transition">
+                        <template x-for="(ing, index) in recipe.bulkIngredients" :key="'bulk'+index">
+                            <div class="flex gap-2 items-center bg-slate-50 dark:bg-slate-800/50 p-2 pl-4 rounded-2xl border border-slate-200 dark:border-slate-700 focus-within:border-amber-400 transition">
                                 <select x-model="ing.nama" class="flex-1 bg-transparent text-[11px] font-bold outline-none border-none text-slate-700 dark:text-slate-200" @change="calcAutoPrice()">
                                     <option value="">Pilih Bahan...</option>
-                                    <template x-for="st in masterStock"><option :value="st.nama" x-text="st.nama"></option></template>
+                                    <template x-for="st in masterStock" :key="'optbulk'+st.nama"><option :value="st.nama" x-text="st.nama"></option></template>
                                 </select>
                                 <div class="flex gap-1 items-center bg-white dark:bg-slate-700 rounded-xl px-1 shadow-sm border border-slate-100 dark:border-slate-600">
                                     <input type="number" x-model.number="ing.qty" placeholder="0" class="w-14 py-2.5 text-center text-[11px] font-black border-none bg-transparent outline-none" @input="calcAutoPrice()">
@@ -222,28 +256,101 @@
                                         <option>g</option><option>kg</option><option>ml</option><option>liter</option><option>ons</option><option>butir</option>
                                     </select>
                                 </div>
-                                <button @click="removeIngredient(index)" class="w-8 h-8 flex justify-center items-center text-slate-400 hover:text-red-500 text-sm transition">✕</button>
+                                <button @click="recipe.bulkIngredients.splice(index, 1); calcAutoPrice()" class="w-8 h-8 flex justify-center items-center text-slate-400 hover:text-red-500 text-sm transition">✕</button>
                             </div>
                         </template>
                     </div>
-
-                    <button @click="addIngredient()" class="w-full py-4 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl text-[11px] font-black text-slate-500 uppercase hover:bg-slate-50 dark:hover:bg-slate-800 transition tracking-widest">+ Tambah Baris Bahan</button>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
-                        <label class="text-[8px] font-black uppercase text-center text-slate-400 pt-2 block">Hasil Jadi (Pcs)</label>
-                        <input type="number" x-model.number="recipe.yield" @input="calcAutoPrice()" placeholder="1" class="w-full flex-1 bg-transparent text-base font-black border-none outline-none text-center focus:ring-2 focus:ring-orange-500 transition pb-2">
+                    <button @click="recipe.bulkIngredients.push({nama: '', qty: null, unit: 'g'})" class="w-full py-3 border border-dashed border-amber-300 dark:border-amber-700 rounded-xl text-[10px] font-black text-amber-600 dark:text-amber-500 uppercase hover:bg-amber-50 dark:hover:bg-amber-900/20 transition tracking-widest">+ Tambah Bahan Adonan</button>
+                    
+                    <div class="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-xl border border-amber-100 dark:border-amber-900/30 text-center">
+                        <span class="text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase">Total Berat Keseluruhan Adonan:</span>
+                        <span class="text-sm font-black text-amber-700 dark:text-amber-400 ml-1" x-text="getBulkWeight() + ' gram'"></span>
                     </div>
-                    <button @click="saveRecipe()" class="bg-slate-900 dark:bg-orange-600 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest active:scale-95 transition shadow-xl shadow-slate-900/20 flex flex-col items-center justify-center py-3">
-                        <span class="text-xl mb-1">💾</span>
-                        <span x-text="editIndex !== null ? 'Update' : 'Simpan'"></span>
-                    </button>
                 </div>
 
-                <template x-if="editIndex !== null">
-                    <button @click="cancelEdit()" class="w-full py-4 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-2xl text-[11px] font-black uppercase tracking-widest active:scale-95 transition mt-2 border border-red-200 dark:border-red-800">✕ Batalkan Edit</button>
-                </template>
+                <div class="card-custom p-6 space-y-4 border-l-4 border-l-rose-500">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <div>
+                            <h3 class="text-[11px] font-black text-rose-600 uppercase tracking-widest flex items-center gap-1.5"><span>🍓</span> Isian & Topping</h3>
+                            <p class="text-[9px] text-slate-400 mt-1 font-medium leading-tight">Selai, Keju Slice, Coklat. Modal dihitung langsung per 1 Pcs produk.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <template x-for="(ing, index) in recipe.pcsIngredients" :key="'pcs'+index">
+                            <div class="flex gap-2 items-center bg-slate-50 dark:bg-slate-800/50 p-2 pl-4 rounded-2xl border border-slate-200 dark:border-slate-700 focus-within:border-rose-400 transition">
+                                <select x-model="ing.nama" class="flex-1 bg-transparent text-[11px] font-bold outline-none border-none text-slate-700 dark:text-slate-200" @change="calcAutoPrice()">
+                                    <option value="">Pilih Topping...</option>
+                                    <template x-for="st in masterStock" :key="'optpcs'+st.nama"><option :value="st.nama" x-text="st.nama"></option></template>
+                                </select>
+                                <div class="flex gap-1 items-center bg-white dark:bg-slate-700 rounded-xl px-1 shadow-sm border border-slate-100 dark:border-slate-600">
+                                    <input type="number" x-model.number="ing.qty" placeholder="0" class="w-14 py-2.5 text-center text-[11px] font-black border-none bg-transparent outline-none" @input="calcAutoPrice()">
+                                    <select x-model="ing.unit" class="text-[10px] font-black border-none outline-none bg-transparent text-slate-500" @change="calcAutoPrice()">
+                                        <option>g</option><option>kg</option><option>ml</option><option>liter</option><option>ons</option><option>butir</option>
+                                    </select>
+                                </div>
+                                <button @click="recipe.pcsIngredients.splice(index, 1); calcAutoPrice()" class="w-8 h-8 flex justify-center items-center text-slate-400 hover:text-red-500 text-sm transition">✕</button>
+                            </div>
+                        </template>
+                    </div>
+                    <button @click="recipe.pcsIngredients.push({nama: '', qty: null, unit: 'g'})" class="w-full py-3 border border-dashed border-rose-300 dark:border-rose-700 rounded-xl text-[10px] font-black text-rose-600 dark:text-rose-500 uppercase hover:bg-rose-50 dark:hover:bg-rose-900/20 transition tracking-widest">+ Tambah Topping</button>
+                </div>
+
+                <div class="card-custom p-6 space-y-4 border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-900/10">
+                    <div class="flex items-center justify-between border-b border-blue-100 dark:border-blue-900/50 pb-3">
+                        <div>
+                            <h3 class="text-[11px] font-black text-blue-600 uppercase tracking-widest flex items-center gap-1.5"><span>🎁</span> Kemasan (Packaging)</h3>
+                            <p class="text-[9px] text-slate-500 mt-1 font-medium leading-tight">Plastik OPP, Toples, Dus, Stiker. Atur cara hitung sesuai kebutuhan.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <template x-for="(ing, index) in recipe.packIngredients" :key="'pack'+index">
+                            <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl border border-blue-200 dark:border-blue-800 shadow-sm focus-within:border-blue-400 transition">
+                                <div class="flex gap-2 items-center mb-3 border-b border-slate-50 dark:border-slate-700 pb-3">
+                                    <select x-model="ing.nama" class="flex-1 bg-transparent text-[11px] font-bold outline-none border-none text-slate-700 dark:text-slate-200" @change="calcAutoPrice()">
+                                        <option value="">Pilih Kemasan...</option>
+                                        <template x-for="st in masterStock" :key="'optpack'+st.nama"><option :value="st.nama" x-text="st.nama"></option></template>
+                                    </select>
+                                    <div class="flex gap-1 items-center bg-slate-50 dark:bg-slate-700 rounded-xl px-1 border border-slate-100 dark:border-slate-600">
+                                        <input type="number" x-model.number="ing.qty" placeholder="1" class="w-14 py-2 text-center text-[11px] font-black border-none bg-transparent outline-none" @input="calcAutoPrice()">
+                                        <select x-model="ing.unit" class="text-[10px] font-black border-none outline-none bg-transparent text-slate-500" @change="calcAutoPrice()">
+                                            <option>pcs</option><option>lembar</option><option>pack</option><option>g</option><option>kg</option>
+                                        </select>
+                                    </div>
+                                    <button @click="recipe.packIngredients.splice(index, 1); calcAutoPrice()" class="w-8 h-8 flex justify-center items-center text-slate-400 hover:text-red-500 text-sm transition bg-slate-50 dark:bg-slate-700 rounded-xl">✕</button>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[9px] font-bold uppercase text-slate-400 min-w-[120px]">Modal ini dihitung untuk:</span>
+                                        <select x-model="ing.type" class="flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[10px] font-black p-2 rounded-xl outline-none border border-blue-100 dark:border-blue-800" @change="calcAutoPrice()">
+                                            <option value="per_pcs">1 Pcs Kue (Satuan)</option>
+                                            <option value="per_resep">Seluruh Hasil 1 Resep</option>
+                                            <option value="per_custom_pcs">Jumlah Pcs Khusus (Manual)</option>
+                                        </select>
+                                    </div>
+                                    <div x-show="ing.type === 'per_custom_pcs'" class="flex items-center justify-between bg-blue-100/50 dark:bg-blue-800/50 p-2 rounded-xl mt-1 border border-blue-200 dark:border-blue-700">
+                                        <span class="text-[9px] font-bold uppercase text-slate-600 dark:text-slate-300 pl-1">Isi per kemasan:</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <input type="number" x-model.number="ing.customPcs" @input="calcAutoPrice()" placeholder="Misal: 25" class="w-16 p-1 bg-white dark:bg-slate-700 text-center text-[11px] font-black rounded outline-none border border-blue-200 dark:border-blue-600 text-blue-700 dark:text-blue-300">
+                                            <span class="text-[9px] font-bold uppercase text-slate-500 pr-1">Pcs Kue</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <button @click="recipe.packIngredients.push({nama: '', qty: 1, unit: 'pcs', type: 'per_pcs', customPcs: 1})" class="w-full py-3 border border-dashed border-blue-300 dark:border-blue-700 rounded-xl text-[10px] font-black text-blue-600 dark:text-blue-500 uppercase hover:bg-blue-50 dark:hover:bg-blue-900/20 transition tracking-widest">+ Tambah Kemasan</button>
+                </div>
+
+                <div class="pt-2 pb-6">
+                    <button @click="saveRecipe()" class="w-full bg-slate-900 dark:bg-orange-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest active:scale-95 transition shadow-xl shadow-slate-900/20 flex items-center justify-center gap-2 py-4">
+                        <span class="text-xl">💾</span> <span x-text="editIndex !== null ? 'Update Resep' : 'Simpan Resep'"></span>
+                    </button>
+                    <template x-if="editIndex !== null">
+                        <button @click="cancelEdit()" class="w-full py-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-2xl text-[11px] font-black uppercase tracking-widest active:scale-95 transition mt-3 border border-red-200 dark:border-red-800">✕ Batalkan Edit</button>
+                    </template>
+                </div>
             </div>
 
             <div x-show="menu === 'list'" x-transition class="space-y-5">
@@ -259,17 +366,40 @@
                         </div>
 
                         <div class="p-5 space-y-4 bg-white dark:bg-[#1e293b]">
-                            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
-                                <p class="text-[10px] font-black uppercase text-slate-500 flex justify-between mb-2">
-                                    <span>Komposisi Resep</span>
-                                    <span class="text-orange-600 bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 rounded" x-text="'Yield: ' + item.yield + ' Pcs'"></span>
-                                </p>
-                                <p class="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed" x-text="item.ingredients.map(i => `${i.nama} (${i.qty} ${i.unit})`).join(', ')"></p>
+                            
+                            <div class="grid grid-cols-3 gap-2 text-center border-b border-slate-100 dark:border-slate-700 pb-4">
+                                <div>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase">Estimasi Hasil</p>
+                                    <p class="text-sm font-black text-slate-800 dark:text-white mt-0.5" x-text="getCalculatedYieldObj(item) + ' Pcs'"></p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase">Berat Mentah</p>
+                                    <p class="text-sm font-black text-slate-800 dark:text-white mt-0.5" x-text="(item.targetWeightPcs || 1) + ' g'"></p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase">Estimasi Matang</p>
+                                    <p class="text-sm font-black text-slate-800 dark:text-white mt-0.5" x-text="Math.round((item.targetWeightPcs || 1) * (1 - (item.bakingLoss || 0)/100)) + ' g'"></p>
+                                </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-3 text-[11px]">
+                            <div class="space-y-2">
+                                <div x-show="(item.bulkIngredients || []).length > 0">
+                                    <p class="text-[9px] font-black uppercase text-amber-600 mb-1">Adonan Dasar:</p>
+                                    <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-amber-50/50 dark:bg-amber-900/10 p-2 rounded-lg" x-text="item.bulkIngredients.map(i => `${i.nama} (${i.qty}${i.unit})`).join(', ')"></p>
+                                </div>
+                                <div x-show="(item.pcsIngredients || []).length > 0">
+                                    <p class="text-[9px] font-black uppercase text-rose-600 mb-1">Isian & Topping:</p>
+                                    <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-rose-50/50 dark:bg-rose-900/10 p-2 rounded-lg" x-text="item.pcsIngredients.map(i => `${i.nama} (${i.qty}${i.unit})`).join(', ')"></p>
+                                </div>
+                                <div x-show="(item.packIngredients || []).length > 0">
+                                    <p class="text-[9px] font-black uppercase text-blue-600 mb-1">Kemasan/Packaging:</p>
+                                    <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-blue-50/50 dark:bg-blue-900/10 p-2 rounded-lg" x-text="item.packIngredients.map(i => `${i.nama} (${i.qty}${i.unit} ${i.type === 'per_resep' ? '[1 Resep]' : (i.type === 'per_custom_pcs' ? '[Per '+(i.customPcs||1)+' Pcs]' : '[Per Pcs]')})`).join(', ')"></p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 text-[11px] pt-2">
                                 <div class="p-3 bg-orange-50 dark:bg-orange-900/10 rounded-xl border border-orange-100 dark:border-orange-900/30">
-                                    <span class="text-[9px] font-bold text-orange-500 uppercase block mb-1">HPP per Pcs</span>
+                                    <span class="text-[9px] font-bold text-orange-500 uppercase block mb-1">Total HPP per Pcs</span>
                                     <span class="font-black text-orange-700 dark:text-orange-400 text-sm" x-text="formatRupiah(item.hpp)"></span>
                                 </div>
                                 <div class="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30 relative overflow-hidden">
@@ -333,7 +463,7 @@
                 
                 <template x-if="simTarget && simQty">
                     <div class="card-custom p-6 space-y-4 shadow-xl border-t-4 border-t-blue-500">
-                        <h5 class="text-[11px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-100 dark:border-slate-700 pb-3">Kebutuhan Bahan Baku:</h5>
+                        <h5 class="text-[11px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-100 dark:border-slate-700 pb-3">Kebutuhan Semua Bahan:</h5>
                         <div class="space-y-3">
                             <template x-for="comp in getSimDetail()">
                                 <div class="flex justify-between items-center text-xs border-b border-slate-50 dark:border-slate-700/50 pb-3">
@@ -408,13 +538,28 @@
                 <div>
                     <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px;">
                         <h2 style="font-size: 28px; font-weight: 900; color: #1e293b; text-transform: uppercase; margin: 0 0 20px 0;" x-text="pdfData.nama"></h2>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #cbd5e1;">
+                            <div style="flex: 1;">
+                                <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Berat Mentah</p>
+                                <p style="font-size: 20px; font-weight: 900; color: #334155; margin: 4px 0 0 0;" x-text="(pdfData.targetWeightPcs || 1) + ' gram'"></p>
+                            </div>
+                            <div style="flex: 1;">
+                                <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Penyusutan Oven</p>
+                                <p style="font-size: 20px; font-weight: 900; color: #334155; margin: 4px 0 0 0;" x-text="(pdfData.bakingLoss || 0) + ' %'"></p>
+                            </div>
+                            <div style="flex: 1;">
+                                <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Estimasi Matang</p>
+                                <p style="font-size: 20px; font-weight: 900; color: #334155; margin: 4px 0 0 0;" x-text="Math.round((pdfData.targetWeightPcs || 1) * (1 - (pdfData.bakingLoss || 0)/100)) + ' gram'"></p>
+                            </div>
+                        </div>
+
                         <div style="display: flex; justify-content: space-between;">
                             <div style="flex: 1;">
                                 <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Hasil (Yield)</p>
-                                <p style="font-size: 24px; font-weight: 900; color: #ea580c; margin: 4px 0 0 0;" x-text="pdfData.yield + ' Pcs'"></p>
+                                <p style="font-size: 24px; font-weight: 900; color: #ea580c; margin: 4px 0 0 0;" x-text="getCalculatedYieldObj(pdfData) + ' Pcs'"></p>
                             </div>
                             <div style="flex: 1;">
-                                <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Harga Jual / Pcs <span x-show="pdfData.discount > 0" x-text="'(Diskon ' + pdfData.discount + '%)'" style="color: #ea580c; background: #fff7ed; padding: 2px 6px; border-radius: 4px; border: 1px solid #fdba74;"></span></p>
+                                <p style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0;">Harga Jual / Pcs <span x-show="pdfData.discount > 0" x-text="'(-' + pdfData.discount + '%)'" style="color: #ea580c; background: #fff7ed; padding: 2px 6px; border-radius: 4px; border: 1px solid #fdba74;"></span></p>
                                 <p style="font-size: 24px; font-weight: 900; color: #10b981; margin: 4px 0 0 0;" x-text="formatRupiah(pdfData.discount > 0 ? pdfData.price * (1 - pdfData.discount/100) : pdfData.price)"></p>
                                 <p x-show="pdfData.discount > 0" style="font-size: 11px; text-decoration: line-through; color: #94a3b8; margin: 2px 0 0 0;" x-text="formatRupiah(pdfData.price)"></p>
                             </div>
@@ -425,16 +570,16 @@
                         </div>
                     </div>
 
-                    <h3 style="font-size: 16px; font-weight: 900; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Komposisi Bahan Baku</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+                    <h3 style="font-size: 16px; font-weight: 900; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Komposisi Adonan Dasar (Dibagi Hasil)</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
                         <thead>
                             <tr style="background-color: #f1f5f9; text-align: left;">
                                 <th style="padding: 12px; font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0;">Nama Bahan</th>
-                                <th style="padding: 12px; font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; text-align: right; border-bottom: 2px solid #e2e8f0;">Takaran</th>
+                                <th style="padding: 12px; font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; text-align: right; border-bottom: 2px solid #e2e8f0;">Takaran Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <template x-for="(ing, index) in pdfData.ingredients">
+                            <template x-for="(ing, index) in pdfData.bulkIngredients">
                                 <tr :style="index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;'">
                                     <td style="padding: 12px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9;" x-text="ing.nama"></td>
                                     <td style="padding: 12px; font-size: 14px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #f1f5f9;" x-text="ing.qty + ' ' + ing.unit"></td>
@@ -443,7 +588,51 @@
                         </tbody>
                     </table>
 
-                    <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <template x-if="(pdfData.pcsIngredients || []).length > 0">
+                        <div>
+                            <h3 style="font-size: 16px; font-weight: 900; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Isian / Topping</h3>
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                                <thead>
+                                    <tr style="background-color: #f1f5f9; text-align: left;">
+                                        <th style="padding: 12px; font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0;">Nama Topping</th>
+                                        <th style="padding: 12px; font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; text-align: right; border-bottom: 2px solid #e2e8f0;">Takaran (Per Pcs)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(ing, index) in pdfData.pcsIngredients">
+                                        <tr :style="index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;'">
+                                            <td style="padding: 12px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9;" x-text="ing.nama"></td>
+                                            <td style="padding: 12px; font-size: 14px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #f1f5f9;" x-text="ing.qty + ' ' + ing.unit"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <template x-if="(pdfData.packIngredients || []).length > 0">
+                        <div>
+                            <h3 style="font-size: 16px; font-weight: 900; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Kemasan & Packaging</h3>
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+                                <thead>
+                                    <tr style="background-color: #eff6ff; text-align: left;">
+                                        <th style="padding: 12px; font-size: 12px; font-weight: 800; color: #1e40af; text-transform: uppercase; border-bottom: 2px solid #bfdbfe;">Nama Kemasan</th>
+                                        <th style="padding: 12px; font-size: 12px; font-weight: 800; color: #1e40af; text-transform: uppercase; text-align: right; border-bottom: 2px solid #bfdbfe;">Takaran & Mode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(ing, index) in pdfData.packIngredients">
+                                        <tr :style="index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;'">
+                                            <td style="padding: 12px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9;" x-text="ing.nama"></td>
+                                            <td style="padding: 12px; font-size: 14px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #f1f5f9;" x-text="ing.qty + ' ' + ing.unit + (ing.type === 'per_resep' ? ' [Dihitung Per 1 Resep Full]' : (ing.type === 'per_custom_pcs' ? ' [Dihitung Per ' + (ing.customPcs || 1) + ' Pcs]' : ' [Dihitung Per 1 Pcs]'))"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 24px; display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
                         <div>
                             <p style="font-size: 14px; font-weight: 800; color: #1e40af; text-transform: uppercase; margin: 0;">Titik Impas / BEP (Break Even Point)</p>
                             <p style="font-size: 12px; color: #3b82f6; margin: 4px 0 0 0;">Jumlah Pcs yang harus terjual untuk balik modal 1 adonan penuh.</p>
@@ -483,7 +672,18 @@
                 settings: { darkMode: false, ppn: false },
                 
                 newStock: { nama: '', harga: null, beratBeli: 1, unit: 'kg', qty: 0, min: 0.5, minUnit: 'kg' },
-                recipe: { nama: '', ingredients: [{nama: '', qty: null, unit: 'g'}], margin: 30, hargaManual: null, yield: 1 },
+                
+                recipe: { 
+                    nama: '', 
+                    bulkIngredients: [{nama: '', qty: null, unit: 'g'}], 
+                    pcsIngredients: [], 
+                    packIngredients: [], 
+                    targetWeightPcs: 50, 
+                    bakingLoss: 10,
+                    margin: 30, 
+                    hargaManual: null 
+                },
+                
                 editIndex: null, 
                 simTarget: '', simQty: null,
                 
@@ -491,7 +691,7 @@
                 toast: { show: false, msg: '', icon: '' },
                 charts: {},
                 isSyncing: true, 
-                pdfData: { nama: 'Memuat...', yield: 1, price: 0, hpp: 0, ingredients: [], discount: 0 },
+                pdfData: { nama: 'Memuat...', price: 0, hpp: 0, bulkIngredients: [], pcsIngredients: [], packIngredients: [], discount: 0, targetWeightPcs: 1, bakingLoss: 0 },
 
                 menuTitle() { return { dash:'Dashboard Bisnis', stock:'Gudang Bahan', recipe:'Kalkulator Resep', list:'Katalog Produk', sim:'Simulasi Produksi', settings:'Konfigurasi Sistem' }[this.menu] },
 
@@ -518,6 +718,24 @@
                             this.items = data.recipes || [];
                             if(data.settings) this.settings = data.settings;
                             
+                            // MIGRATION SCRIPT 
+                            this.items = this.items.map(i => {
+                                if(i.ingredients && !i.bulkIngredients) {
+                                    i.bulkIngredients = JSON.parse(JSON.stringify(i.ingredients));
+                                    delete i.ingredients;
+                                }
+                                if(!i.pcsIngredients) i.pcsIngredients = [];
+                                if(!i.packIngredients) i.packIngredients = [];
+                                // Pastikan data kemasan memiliki customPcs
+                                i.packIngredients = i.packIngredients.map(p => {
+                                    if(p.customPcs === undefined) p.customPcs = 1;
+                                    return p;
+                                });
+                                if(!i.targetWeightPcs) i.targetWeightPcs = 50;
+                                if(!i.bakingLoss) i.bakingLoss = 10;
+                                return i;
+                            });
+
                             localStorage.setItem('bV26_Stock_Final', JSON.stringify(this.masterStock));
                             localStorage.setItem('bV26_Recipe_Final', JSON.stringify(this.items));
                             localStorage.setItem('bV26_Settings_Final', JSON.stringify(this.settings));
@@ -598,8 +816,72 @@
                 },
 
                 getMultiplier(unit) {
-                    const m = { 'kg': 1000, 'g': 1, 'gram': 1, 'liter': 1000, 'ml': 1, 'mili liter': 1, 'ons': 100, 'butir': 1 };
+                    const m = { 'kg': 1000, 'g': 1, 'gram': 1, 'liter': 1000, 'ml': 1, 'mili liter': 1, 'ons': 100, 'butir': 1, 'pcs': 1, 'lembar': 1, 'pack': 1, 'kotak': 1, 'buah': 1 };
                     return m[unit] || 1;
+                },
+
+                getBulkWeight() {
+                    return this.recipe.bulkIngredients.reduce((acc, ing) => acc + (ing.qty || 0) * this.getMultiplier(ing.unit), 0);
+                },
+                
+                getCalculatedYield() {
+                    let bw = this.getBulkWeight();
+                    let tw = this.recipe.targetWeightPcs || 1;
+                    return Math.floor(bw / tw) || 1;
+                },
+
+                getCalculatedYieldObj(r) {
+                    let bw = (r.bulkIngredients || []).reduce((acc, ing) => acc + (ing.qty || 0) * this.getMultiplier(ing.unit), 0);
+                    let tw = r.targetWeightPcs || 1;
+                    return Math.floor(bw / tw) || 1;
+                },
+
+                getHppPerGram() {
+                    let bw = this.getBulkWeight();
+                    if(bw === 0) return 0;
+                    let bulkCost = this.recipe.bulkIngredients.reduce((acc, ing) => {
+                        const st = this.masterStock.find(s => s.nama === ing.nama);
+                        if(!st) return acc;
+                        let pUnit = st.harga / (st.beratBeli * this.getMultiplier(st.unit));
+                        return acc + (pUnit * (ing.qty || 0) * this.getMultiplier(ing.unit));
+                    }, 0);
+                    return bulkCost / bw;
+                },
+
+                calculateHpp() {
+                    let yieldPcs = this.getCalculatedYield();
+
+                    let bulkCost = this.recipe.bulkIngredients.reduce((acc, ing) => {
+                        const st = this.masterStock.find(s => s.nama === ing.nama);
+                        if(!st) return acc;
+                        let pUnit = st.harga / (st.beratBeli * this.getMultiplier(st.unit));
+                        return acc + (pUnit * (ing.qty || 0) * this.getMultiplier(ing.unit));
+                    }, 0);
+
+                    let pcsCost = this.recipe.pcsIngredients.reduce((acc, ing) => {
+                        const st = this.masterStock.find(s => s.nama === ing.nama);
+                        if(!st) return acc;
+                        let pUnit = st.harga / (st.beratBeli * this.getMultiplier(st.unit));
+                        return acc + (pUnit * (ing.qty || 0) * this.getMultiplier(ing.unit));
+                    }, 0);
+
+                    // UPDATE: LOGIKA CUSTOM PCS
+                    let packCost = this.recipe.packIngredients.reduce((acc, ing) => {
+                        const st = this.masterStock.find(s => s.nama === ing.nama);
+                        if(!st) return acc;
+                        let pUnit = st.harga / (st.beratBeli * this.getMultiplier(st.unit));
+                        let cost = pUnit * (ing.qty || 0) * this.getMultiplier(ing.unit);
+                        
+                        if (ing.type === 'per_resep') {
+                            return acc + (cost / (yieldPcs || 1));
+                        } else if (ing.type === 'per_custom_pcs') {
+                            return acc + (cost / (ing.customPcs || 1));
+                        } else {
+                            return acc + cost;
+                        }
+                    }, 0);
+
+                    return (bulkCost / yieldPcs) + pcsCost + packCost;
                 },
 
                 calcAutoPrice() {
@@ -612,21 +894,12 @@
                     let price = this.settings.ppn ? (this.recipe.hargaManual || 0) / 1.11 : (this.recipe.hargaManual || 0);
                     this.recipe.margin = price > 0 ? Math.round(((price - hpp) / price) * 100) : 0;
                 },
-                calculateHpp() {
-                    let total = this.recipe.ingredients.reduce((acc, ing) => {
-                        const st = this.masterStock.find(s => s.nama === ing.nama);
-                        if(!st) return acc;
-                        let pUnit = st.harga / (st.beratBeli * this.getMultiplier(st.unit));
-                        let ingVal = (ing.qty || 0) * this.getMultiplier(ing.unit);
-                        return acc + (pUnit * ingVal);
-                    }, 0);
-                    return total / (this.recipe.yield || 1);
-                },
 
                 calculateBEP(item) {
-                    let totalModalAdonan = item.hpp * item.yield;
+                    let yieldPcs = this.getCalculatedYieldObj(item);
+                    let totalModalSatuResepPenuh = item.hpp * yieldPcs;
                     let actualPrice = item.discount > 0 ? item.price * (1 - item.discount/100) : item.price;
-                    return actualPrice > 0 ? Math.ceil(totalModalAdonan / actualPrice) : 0;
+                    return actualPrice > 0 ? Math.ceil(totalModalSatuResepPenuh / actualPrice) : 0;
                 },
 
                 addStock() {
@@ -641,7 +914,20 @@
 
                 editItem(index) {
                     let item = this.items[index];
-                    this.recipe = { nama: item.nama, ingredients: JSON.parse(JSON.stringify(item.ingredients)), margin: 0, hargaManual: item.price, yield: item.yield };
+                    
+                    this.recipe = { 
+                        nama: item.nama, 
+                        bulkIngredients: JSON.parse(JSON.stringify(item.bulkIngredients || [])), 
+                        pcsIngredients: JSON.parse(JSON.stringify(item.pcsIngredients || [])), 
+                        packIngredients: JSON.parse(JSON.stringify(item.packIngredients || [])), 
+                        targetWeightPcs: item.targetWeightPcs || 50,
+                        bakingLoss: item.bakingLoss || 10,
+                        margin: 0, 
+                        hargaManual: item.price
+                    };
+                    
+                    if(this.recipe.bulkIngredients.length === 0) this.recipe.bulkIngredients.push({nama: '', qty: null, unit: 'g'});
+                    
                     this.calcAutoMargin(); 
                     this.editIndex = index;
                     this.menu = 'recipe';
@@ -650,20 +936,28 @@
 
                 cancelEdit() {
                     this.editIndex = null;
-                    this.recipe = { nama: '', ingredients: [{nama: '', qty: null, unit: 'g'}], margin: 30, yield: 1, hargaManual: null };
+                    this.recipe = { nama: '', bulkIngredients: [{nama: '', qty: null, unit: 'g'}], pcsIngredients: [], packIngredients: [], targetWeightPcs: 50, bakingLoss: 10, margin: 30, hargaManual: null };
                     this.menu = 'list';
                 },
 
                 saveRecipe() {
                     if(!this.recipe.nama || !this.recipe.hargaManual) { this.showToast('Nama & Harga wajib!', '❌'); return; }
                     let newItem = {
-                        nama: this.recipe.nama, hpp: this.calculateHpp(), price: this.recipe.hargaManual, yield: this.recipe.yield,
-                        ingredients: JSON.parse(JSON.stringify(this.recipe.ingredients)), sold: this.editIndex !== null ? this.items[this.editIndex].sold : 0, discount: this.editIndex !== null ? (this.items[this.editIndex].discount || 0) : 0
+                        nama: this.recipe.nama, 
+                        hpp: this.calculateHpp(), 
+                        price: this.recipe.hargaManual, 
+                        targetWeightPcs: this.recipe.targetWeightPcs,
+                        bakingLoss: this.recipe.bakingLoss,
+                        bulkIngredients: JSON.parse(JSON.stringify(this.recipe.bulkIngredients)), 
+                        pcsIngredients: JSON.parse(JSON.stringify(this.recipe.pcsIngredients)), 
+                        packIngredients: JSON.parse(JSON.stringify(this.recipe.packIngredients)), 
+                        sold: this.editIndex !== null ? this.items[this.editIndex].sold : 0, 
+                        discount: this.editIndex !== null ? (this.items[this.editIndex].discount || 0) : 0
                     };
                     if (this.editIndex !== null) { this.items[this.editIndex] = newItem; this.editIndex = null; this.showToast('Resep Diperbarui!'); } 
                     else { this.items.unshift(newItem); this.showToast('Resep Baru Disimpan!'); }
                     this.saveData(false);
-                    this.recipe = { nama: '', ingredients: [{nama: '', qty: null, unit: 'g'}], margin: 30, yield: 1, hargaManual: null };
+                    this.recipe = { nama: '', bulkIngredients: [{nama: '', qty: null, unit: 'g'}], pcsIngredients: [], packIngredients: [], targetWeightPcs: 50, bakingLoss: 10, margin: 30, hargaManual: null };
                     this.menu = 'list';
                     this.updateCharts();
                 },
@@ -672,10 +966,12 @@
                     if (delta < 0 && (item.sold || 0) <= 0) return;
                     item.sold = (item.sold || 0) + delta;
                     let stockWarning = false;
-                    item.ingredients.forEach(ing => {
+                    let yieldPcs = this.getCalculatedYieldObj(item) || 1;
+                    
+                    (item.bulkIngredients || []).forEach(ing => {
                         const st = this.masterStock.find(s => s.nama === ing.nama);
                         if (st) {
-                            let baseQtyPerPcs = (ing.qty * this.getMultiplier(ing.unit)) / item.yield;
+                            let baseQtyPerPcs = (ing.qty * this.getMultiplier(ing.unit)) / yieldPcs;
                             let totalBaseUsed = baseQtyPerPcs * delta;
                             let stockUnitUsed = totalBaseUsed / this.getMultiplier(st.unit);
                             st.qty -= stockUnitUsed;
@@ -683,6 +979,35 @@
                             if(this.isStockLow(st)) stockWarning = true;
                         }
                     });
+
+                    (item.pcsIngredients || []).forEach(ing => {
+                        const st = this.masterStock.find(s => s.nama === ing.nama);
+                        if (st) {
+                            let totalPcsUsed = (ing.qty * this.getMultiplier(ing.unit)) * delta;
+                            let stockUnitUsed = totalPcsUsed / this.getMultiplier(st.unit);
+                            st.qty -= stockUnitUsed;
+                            st.qty = parseFloat(st.qty.toFixed(2));
+                            if(this.isStockLow(st)) stockWarning = true;
+                        }
+                    });
+
+                    // UPDATE: LOGIKA CUSTOM PCS UNTUK STOK
+                    (item.packIngredients || []).forEach(ing => {
+                        const st = this.masterStock.find(s => s.nama === ing.nama);
+                        if (st) {
+                            let usage = (ing.qty * this.getMultiplier(ing.unit)) * delta;
+                            if (ing.type === 'per_resep') { 
+                                usage = usage / yieldPcs; 
+                            } else if (ing.type === 'per_custom_pcs') {
+                                usage = usage / (ing.customPcs || 1);
+                            }
+                            let stockUnitUsed = usage / this.getMultiplier(st.unit);
+                            st.qty -= stockUnitUsed;
+                            st.qty = parseFloat(st.qty.toFixed(2));
+                            if(this.isStockLow(st)) stockWarning = true;
+                        }
+                    });
+
                     this.saveData(false);
                     this.updateCharts();
                     if(delta > 0) this.showToast('Terjual! Stok Dipotong', '🛒');
@@ -692,12 +1017,40 @@
                 getSimDetail() {
                     const item = this.items.find(i => i.nama === this.simTarget);
                     if(!item) return [];
-                    return item.ingredients.map(ing => {
-                        let baseQty = (ing.qty * this.getMultiplier(ing.unit)) / item.yield;
-                        let totalVal = baseQty * this.simQty;
-                        const st = this.masterStock.find(s => s.nama === ing.nama);
+                    let reqs = {};
+                    let yieldPcs = this.getCalculatedYieldObj(item) || 1;
+
+                    (item.bulkIngredients || []).forEach(ing => {
+                        let baseQtyPerPcs = (ing.qty * this.getMultiplier(ing.unit)) / yieldPcs;
+                        let totalGrams = baseQtyPerPcs * this.simQty;
+                        if(!reqs[ing.nama]) reqs[ing.nama] = {total: 0, unit: ing.unit};
+                        reqs[ing.nama].total += totalGrams;
+                    });
+
+                    (item.pcsIngredients || []).forEach(ing => {
+                        let totalGrams = (ing.qty * this.getMultiplier(ing.unit)) * this.simQty;
+                        if(!reqs[ing.nama]) reqs[ing.nama] = {total: 0, unit: ing.unit};
+                        reqs[ing.nama].total += totalGrams;
+                    });
+
+                    // UPDATE: LOGIKA CUSTOM PCS UNTUK SIMULASI
+                    (item.packIngredients || []).forEach(ing => {
+                        let totalPcs = (ing.qty * this.getMultiplier(ing.unit)) * this.simQty;
+                        if (ing.type === 'per_resep') { 
+                            totalPcs = totalPcs / yieldPcs; 
+                        } else if (ing.type === 'per_custom_pcs') {
+                            totalPcs = totalPcs / (ing.customPcs || 1);
+                        }
+                        if(!reqs[ing.nama]) reqs[ing.nama] = {total: 0, unit: ing.unit};
+                        reqs[ing.nama].total += totalPcs;
+                    });
+
+                    return Object.keys(reqs).map(nama => {
+                        const st = this.masterStock.find(s => s.nama === nama);
+                        let totalVal = reqs[nama].total;
                         let cost = st ? totalVal * (st.harga / (st.beratBeli * this.getMultiplier(st.unit))) : 0;
-                        return { nama: ing.nama, total: totalVal.toFixed(1), unit: (ing.unit === 'kg' || ing.unit==='g')?'g':'ml', cost: cost };
+                        let finalUnit = reqs[nama].unit === 'ml' || reqs[nama].unit === 'liter' ? 'ml' : (['pcs','lembar','pack'].includes(reqs[nama].unit) ? 'pcs' : 'g');
+                        return { nama, total: totalVal.toFixed(1), unit: finalUnit, cost };
                     });
                 },
                 getSimTotalCost() { return this.getSimDetail().reduce((acc, i) => acc + i.cost, 0); },
@@ -733,8 +1086,6 @@
 
                 deleteStock(i) { if(confirm('Hapus bahan ini permanen?')) { this.masterStock.splice(i, 1); this.saveData(false); this.updateCharts(); this.showToast('Bahan Dihapus', '🗑️'); } },
                 deleteItem(i) { if(confirm('Hapus resep ini permanen?')) { this.items.splice(i, 1); this.saveData(false); this.updateCharts(); this.showToast('Resep Dihapus', '🗑️'); } },
-                addIngredient() { this.recipe.ingredients.push({nama: '', qty: null, unit: 'g'}); },
-                removeIngredient(i) { this.recipe.ingredients.splice(i, 1); this.calcAutoPrice(); },
                 goToStock() { this.showReminder = false; this.menu = 'stock'; window.scrollTo(0,0); },
                 formatRupiah(n) { return "Rp " + Math.round(n || 0).toLocaleString('id-ID'); },
                 
