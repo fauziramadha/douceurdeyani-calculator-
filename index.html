@@ -518,7 +518,7 @@
     </div>
 
     <div id="pdf-wrapper" style="position: absolute; top: 0; left: -15000px; z-index: -9999; overflow: visible;">
-        <div id="pdf-export-template" style="background-color: white; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; width: 800px; padding: 40px; box-sizing: border-box; min-height: 1100px;">
+        <div id="pdf-export-template" style="background-color: white; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; width: 800px; padding: 40px; box-sizing: border-box; height: auto;">
             
             <div style="border-bottom: 4px solid #f97316; padding-bottom: 24px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end;">
                 <div style="display: flex; align-items: center; gap: 16px;">
@@ -580,7 +580,7 @@
                         </thead>
                         <tbody>
                             <template x-for="(ing, index) in pdfData.bulkIngredients">
-                                <tr :style="index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;'">
+                                <tr :style="(index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;') + ' page-break-inside: avoid; break-inside: avoid;'">
                                     <td style="padding: 12px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9;" x-text="ing.nama"></td>
                                     <td style="padding: 12px; font-size: 14px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #f1f5f9;" x-text="ing.qty + ' ' + ing.unit"></td>
                                 </tr>
@@ -600,7 +600,7 @@
                                 </thead>
                                 <tbody>
                                     <template x-for="(ing, index) in pdfData.pcsIngredients">
-                                        <tr :style="index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;'">
+                                        <tr :style="(index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;') + ' page-break-inside: avoid; break-inside: avoid;'">
                                             <td style="padding: 12px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9;" x-text="ing.nama"></td>
                                             <td style="padding: 12px; font-size: 14px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #f1f5f9;" x-text="ing.qty + ' ' + ing.unit"></td>
                                         </tr>
@@ -622,7 +622,7 @@
                                 </thead>
                                 <tbody>
                                     <template x-for="(ing, index) in pdfData.packIngredients">
-                                        <tr :style="index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;'">
+                                        <tr :style="(index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;') + ' page-break-inside: avoid; break-inside: avoid;'">
                                             <td style="padding: 12px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9;" x-text="ing.nama"></td>
                                             <td style="padding: 12px; font-size: 14px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #f1f5f9;" x-text="ing.qty + ' ' + ing.unit + (ing.type === 'per_resep' ? ' [Dihitung Per 1 Resep Full]' : (ing.type === 'per_custom_pcs' ? ' [Dihitung Per ' + (ing.customPcs || 1) + ' Pcs]' : ' [Dihitung Per 1 Pcs]'))"></td>
                                         </tr>
@@ -632,7 +632,7 @@
                         </div>
                     </template>
 
-                    <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 24px; display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+                    <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 24px; display: flex; justify-content: space-between; align-items: center; margin-top: 30px; page-break-inside: avoid; break-inside: avoid;">
                         <div>
                             <p style="font-size: 14px; font-weight: 800; color: #1e40af; text-transform: uppercase; margin: 0;">Titik Impas / BEP (Break Even Point)</p>
                             <p style="font-size: 12px; color: #3b82f6; margin: 4px 0 0 0;">Jumlah Pcs yang harus terjual untuk balik modal 1 adonan penuh.</p>
@@ -642,7 +642,7 @@
                         </div>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 60px;">
+                    <div style="text-align: center; margin-top: 60px; page-break-inside: avoid; break-inside: avoid;">
                         <p style="font-size: 10px; font-weight: 800; color: #cbd5e1; text-transform: uppercase; letter-spacing: 2px;">Generated by BakerCalc Pro - Internal Document</p>
                     </div>
                 </div>
@@ -718,7 +718,6 @@
                             this.items = data.recipes || [];
                             if(data.settings) this.settings = data.settings;
                             
-                            // MIGRATION SCRIPT 
                             this.items = this.items.map(i => {
                                 if(i.ingredients && !i.bulkIngredients) {
                                     i.bulkIngredients = JSON.parse(JSON.stringify(i.ingredients));
@@ -726,7 +725,6 @@
                                 }
                                 if(!i.pcsIngredients) i.pcsIngredients = [];
                                 if(!i.packIngredients) i.packIngredients = [];
-                                // Pastikan data kemasan memiliki customPcs
                                 i.packIngredients = i.packIngredients.map(p => {
                                     if(p.customPcs === undefined) p.customPcs = 1;
                                     return p;
@@ -805,7 +803,8 @@
                             filename:     `Resep_${item.nama.replace(/\s+/g, '_')}_Douceur.pdf`,
                             image:        { type: 'jpeg', quality: 0.98 },
                             html2canvas:  { scale: 2, useCORS: true, width: 800, windowWidth: 800 },
-                            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+                            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+                            pagebreak:    { mode: ['avoid-all', 'css'] } // Tambahan konfigurasi PDF agar tidak terpotong
                         };
 
                         html2pdf().set(opt).from(element).save().then(() => {
@@ -865,7 +864,6 @@
                         return acc + (pUnit * (ing.qty || 0) * this.getMultiplier(ing.unit));
                     }, 0);
 
-                    // UPDATE: LOGIKA CUSTOM PCS
                     let packCost = this.recipe.packIngredients.reduce((acc, ing) => {
                         const st = this.masterStock.find(s => s.nama === ing.nama);
                         if(!st) return acc;
@@ -915,11 +913,12 @@
                 editItem(index) {
                     let item = this.items[index];
                     
+                    // PERBAIKAN: Gunakan .map untuk membuat referensi objek yang benar-benar baru, mencegah error pengikatan pada select option Alpine
                     this.recipe = { 
                         nama: item.nama, 
-                        bulkIngredients: JSON.parse(JSON.stringify(item.bulkIngredients || [])), 
-                        pcsIngredients: JSON.parse(JSON.stringify(item.pcsIngredients || [])), 
-                        packIngredients: JSON.parse(JSON.stringify(item.packIngredients || [])), 
+                        bulkIngredients: item.bulkIngredients ? item.bulkIngredients.map(ing => ({ ...ing })) : [], 
+                        pcsIngredients: item.pcsIngredients ? item.pcsIngredients.map(ing => ({ ...ing })) : [], 
+                        packIngredients: item.packIngredients ? item.packIngredients.map(ing => ({ ...ing })) : [], 
                         targetWeightPcs: item.targetWeightPcs || 50,
                         bakingLoss: item.bakingLoss || 10,
                         margin: 0, 
@@ -991,7 +990,6 @@
                         }
                     });
 
-                    // UPDATE: LOGIKA CUSTOM PCS UNTUK STOK
                     (item.packIngredients || []).forEach(ing => {
                         const st = this.masterStock.find(s => s.nama === ing.nama);
                         if (st) {
@@ -1033,7 +1031,6 @@
                         reqs[ing.nama].total += totalGrams;
                     });
 
-                    // UPDATE: LOGIKA CUSTOM PCS UNTUK SIMULASI
                     (item.packIngredients || []).forEach(ing => {
                         let totalPcs = (ing.qty * this.getMultiplier(ing.unit)) * this.simQty;
                         if (ing.type === 'per_resep') { 
