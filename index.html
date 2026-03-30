@@ -121,7 +121,6 @@
             </div>
 
             <div x-show="menu === 'stock'" x-transition class="space-y-6">
-                
                 <template x-if="editStockIndex !== null">
                     <div class="bg-blue-500 text-white p-3 rounded-2xl text-center text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 animate-pulse max-w-2xl mx-auto">
                         <span class="text-lg">✏️</span> Sedang Edit Bahan
@@ -208,7 +207,6 @@
             </div>
 
             <div x-show="menu === 'recipe'" x-transition class="space-y-5 max-w-2xl mx-auto">
-                
                 <template x-if="editIndex !== null">
                     <div class="bg-blue-500 text-white p-3 rounded-2xl text-center text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 animate-pulse">
                         <span class="text-lg">✏️</span> Mode Edit Resep
@@ -415,15 +413,15 @@
                                 <div class="space-y-2 flex-1">
                                     <div x-show="(item.bulkIngredients || []).length > 0">
                                         <p class="text-[9px] font-black uppercase text-amber-600 mb-1">Adonan Dasar:</p>
-                                        <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-amber-50/50 dark:bg-amber-900/10 p-2 rounded-lg" x-text="item.bulkIngredients.map(i => `${i.nama} (${i.qty}${i.unit})`).join(', ')"></p>
+                                        <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-amber-50/50 dark:bg-amber-900/10 p-2 rounded-lg" x-text="(item.bulkIngredients || []).map(i => `${i.nama} (${i.qty}${i.unit})`).join(', ')"></p>
                                     </div>
                                     <div x-show="(item.pcsIngredients || []).length > 0">
                                         <p class="text-[9px] font-black uppercase text-rose-600 mb-1">Isian & Topping:</p>
-                                        <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-rose-50/50 dark:bg-rose-900/10 p-2 rounded-lg" x-text="item.pcsIngredients.map(i => `${i.nama} (${i.qty}${i.unit})`).join(', ')"></p>
+                                        <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-rose-50/50 dark:bg-rose-900/10 p-2 rounded-lg" x-text="(item.pcsIngredients || []).map(i => `${i.nama} (${i.qty}${i.unit})`).join(', ')"></p>
                                     </div>
                                     <div x-show="(item.packIngredients || []).length > 0">
                                         <p class="text-[9px] font-black uppercase text-blue-600 mb-1">Kemasan/Packaging:</p>
-                                        <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-blue-50/50 dark:bg-blue-900/10 p-2 rounded-lg" x-text="item.packIngredients.map(i => `${i.nama} (${i.qty}${i.unit} ${i.type === 'per_resep' ? '[1 Resep]' : (i.type === 'per_custom_pcs' ? '[Per '+(i.customPcs||1)+' Pcs]' : '[Per Pcs]')})`).join(', ')"></p>
+                                        <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-blue-50/50 dark:bg-blue-900/10 p-2 rounded-lg" x-text="(item.packIngredients || []).map(i => `${i.nama} (${i.qty}${i.unit} ${i.type === 'per_resep' ? '[1 Resep]' : (i.type === 'per_custom_pcs' ? '[Per '+(i.customPcs||1)+' Pcs]' : '[Per Pcs]')})`).join(', ')"></p>
                                     </div>
                                 </div>
 
@@ -584,7 +582,7 @@
                                 </tr>
                             </thead>
                             <tbody style="break-inside: auto;">
-                                <template x-for="(ing, index) in pdfData.bulkIngredients" :key="'pdfbulk'+index">
+                                <template x-for="(ing, index) in (pdfData.bulkIngredients || [])" :key="'pdfbulk'+index">
                                     <tr :style="(index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;') + ' page-break-inside: avoid; break-inside: avoid;'">
                                         <td style="padding: 12px; font-size: 13px; font-weight: 600; color: #334155; border-bottom: 1px solid #f1f5f9;" x-text="ing.nama"></td>
                                         <td style="padding: 12px; font-size: 13px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #f1f5f9;" x-text="ing.qty + ' ' + ing.unit"></td>
@@ -605,7 +603,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <template x-for="(ing, index) in pdfData.pcsIngredients" :key="'pdfpcs'+index">
+                                    <template x-for="(ing, index) in (pdfData.pcsIngredients || [])" :key="'pdfpcs'+index">
                                         <tr :style="(index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #fdf2f8;') + ' page-break-inside: avoid; break-inside: avoid;'">
                                             <td style="padding: 12px; font-size: 13px; font-weight: 600; color: #334155; border-bottom: 1px solid #fdf2f8;" x-text="ing.nama"></td>
                                             <td style="padding: 12px; font-size: 13px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #fdf2f8;" x-text="ing.qty + ' ' + ing.unit"></td>
@@ -627,7 +625,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <template x-for="(ing, index) in pdfData.packIngredients" :key="'pdfpack'+index">
+                                    <template x-for="(ing, index) in (pdfData.packIngredients || [])" :key="'pdfpack'+index">
                                         <tr :style="(index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #eff6ff;') + ' page-break-inside: avoid; break-inside: avoid;'">
                                             <td style="padding: 12px; font-size: 13px; font-weight: 600; color: #334155; border-bottom: 1px solid #eff6ff;" x-text="ing.nama"></td>
                                             <td style="padding: 12px; font-size: 13px; font-weight: 900; color: #0f172a; text-align: right; border-bottom: 1px solid #eff6ff;" x-text="ing.qty + ' ' + ing.unit + (ing.type === 'per_resep' ? ' [Dihitung Per 1 Resep]' : (ing.type === 'per_custom_pcs' ? ' [Dihitung Per ' + (ing.customPcs || 1) + ' Pcs]' : ' [Dihitung Per Pcs]'))"></td>
@@ -678,7 +676,7 @@
                 settings: { darkMode: false, ppn: false },
                 
                 newStock: { nama: '', harga: null, beratBeli: 1, unit: 'kg', qty: 0, min: 0.5, minUnit: 'kg' },
-                editStockIndex: null, // Fitur Edit Stok
+                editStockIndex: null,
                 
                 recipe: { 
                     nama: '', 
@@ -698,7 +696,7 @@
                 toast: { show: false, msg: '', icon: '' },
                 charts: {},
                 isSyncing: true, 
-                syncTimeout: null, // Debounce Firebase
+                syncTimeout: null, 
                 pdfData: { nama: 'Memuat...', price: 0, hpp: 0, bulkIngredients: [], pcsIngredients: [], packIngredients: [], discount: 0, targetWeightPcs: 1, bakingLoss: 0 },
 
                 menuTitle() { return { dash:'Dashboard Bisnis', stock:'Manajemen Gudang', recipe:'Kalkulator Resep', list:'Katalog Produk', sim:'Simulasi Produksi', settings:'Konfigurasi Sistem' }[this.menu] },
@@ -709,7 +707,6 @@
                 },
 
                 async init() {
-                    // REAL-TIME SYNC (Mendengarkan perubahan data langsung dari Cloud)
                     DOC_REF.onSnapshot((docSnap) => {
                         if (docSnap.exists) {
                             const data = docSnap.data();
@@ -717,12 +714,15 @@
                             
                             let freshItems = data.recipes || [];
                             this.items = freshItems.map(i => {
+                                // PERBAIKAN DI SINI: Mencegah error mapping data kosong
                                 if(i.ingredients && !i.bulkIngredients) {
                                     i.bulkIngredients = JSON.parse(JSON.stringify(i.ingredients));
                                     delete i.ingredients;
                                 }
+                                if(!i.bulkIngredients) i.bulkIngredients = []; // Penambahan
                                 if(!i.pcsIngredients) i.pcsIngredients = [];
                                 if(!i.packIngredients) i.packIngredients = [];
+                                
                                 i.packIngredients = i.packIngredients.map(p => { if(p.customPcs === undefined) p.customPcs = 1; return p; });
                                 if(!i.targetWeightPcs) i.targetWeightPcs = 50;
                                 if(!i.bakingLoss) i.bakingLoss = 10;
@@ -759,7 +759,6 @@
                     this.isSyncing = true;
                     clearTimeout(this.syncTimeout); 
                     
-                    // DEBOUNCE: Mencegah Firebase Lag / Kelebihan Kuota
                     this.syncTimeout = setTimeout(async () => {
                         try {
                             await DOC_REF.set({
@@ -785,7 +784,6 @@
                     }
                 },
 
-                // FITUR EDIT BAHAN GUDANG
                 editStock(index) {
                     this.editStockIndex = index;
                     let st = this.masterStock[index];
@@ -819,7 +817,6 @@
                     this.updateCharts();
                 },
 
-                // PERBAIKAN GENERATE PDF ANTI-TERPOTONG
                 async exportToPDF(item) {
                     this.pdfData = JSON.parse(JSON.stringify(item));
                     this.showToast('Menyiapkan Laporan PDF...', '⏳');
@@ -833,14 +830,13 @@
                         wrapper.style.left = '0';
                         wrapper.style.zIndex = '-1'; 
 
-                        // Konfigurasi Baru untuk memastikan tidak terpotong
                         const opt = {
-                            margin:       [0.4, 0], // Margin atas/bawah, Kiri Kanan ditangani oleh padding HTML
+                            margin:       [0.4, 0],
                             filename:     `Resep_${item.nama.replace(/\s+/g, '_')}_Douceur.pdf`,
                             image:        { type: 'jpeg', quality: 0.98 },
-                            html2canvas:  { scale: 2, useCORS: true, width: 794, windowWidth: 794 }, // Lebar fix standar kertas A4
+                            html2canvas:  { scale: 2, useCORS: true, width: 794, windowWidth: 794 }, 
                             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                            pagebreak:    { mode: ['css', 'legacy'] } // Mendengarkan perintah page-break-inside di HTML
+                            pagebreak:    { mode: ['css', 'legacy'] } 
                         };
 
                         html2pdf().set(opt).from(element).save().then(() => {
