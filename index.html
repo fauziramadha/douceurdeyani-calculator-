@@ -944,8 +944,19 @@
                     this.isSyncing = true;
                     clearTimeout(this.syncTimeout);
                     this.syncTimeout = setTimeout(async () => {
-                        try { await DOC_REF.set({ stock: this.masterStock, recipes: this.items, settings: this.settings, lastUpdated: new Date().toISOString() }); }
-                        catch (e) { this.showToast('Gagal Simpan!', '❌'); }
+                        try { 
+                            await DOC_REF.set({ 
+                                stock: this.masterStock, 
+                                recipes: this.items, 
+                                settings: this.settings, 
+                                lastUpdated: new Date().toISOString(),
+                                pin: "yani123" // <--- FIX DITAMBAHKAN DI SINI
+                            }, { merge: true }); 
+                        }
+                        catch (e) { 
+                            console.error(e);
+                            this.showToast('Gagal Simpan!', '❌'); 
+                        }
                         this.isSyncing = false;
                     }, 1000);
                 },
